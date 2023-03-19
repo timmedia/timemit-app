@@ -1,10 +1,41 @@
-import React, { useState } from "react";
-import { Text, View, StyleSheet } from "react-native";
+import React, { useRef, useState } from "react";
+import { StyleSheet, Animated } from "react-native";
 import AppStyles from "../../Style";
 import { formatTimestamp } from "../utils/format-time";
 
 const TotalTimeTitle = (props: { totalMillis: number }) => {
-  return <Text style={styles.title}>{formatTimestamp(props.totalMillis)}</Text>;
+  const scaleAnimation = useRef(new Animated.Value(1)).current;
+
+  const [scale, setScale] = useState(1);
+
+  const millis = props.totalMillis;
+  const timestamp = formatTimestamp(millis);
+  const nextScale = Math.min(
+    2,
+    Math.max(2 / (1 + 0.15 * (formatTimestamp(millis + 2000).length - 4)), 0.7)
+  );
+
+  if (scale != nextScale) {
+    setScale(nextScale);
+    Animated.timing(scaleAnimation, {
+      toValue: nextScale,
+      duration: 1500,
+      useNativeDriver: true,
+    }).start();
+  }
+
+  return (
+    <Animated.Text
+      style={[
+        styles.title,
+        {
+          transform: [{ scale: scaleAnimation }],
+        },
+      ]}
+    >
+      {timestamp}
+    </Animated.Text>
+  );
 };
 
 export default TotalTimeTitle;

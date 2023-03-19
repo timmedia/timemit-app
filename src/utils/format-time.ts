@@ -9,6 +9,9 @@ export function formatTimestamp(millis: number) {
       : fullMinutes > 0
       ? `${fullMinutes.toString()}:`
       : "";
-  const s = seconds.toFixed(2).padStart(5, "0");
+  const s =
+    fullHours > 0 || fullMinutes > 0
+      ? `${seconds.toFixed(2).padStart(5, "0")}`
+      : `${seconds.toFixed(2)}`;
   return `${h}${m}${s}`;
 }

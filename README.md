@@ -1,14 +1,29 @@
 # timemit - Why another stopwatch?
 
-I **love** using stopwatches – especially over prolonged time intervals. However, there is one extremely infuriating property of the stock stopwatch app: A single, perhaps accidental, touch of the dreaded «Reset» circle annihilates everything. Permanently.
+I **love** using stopwatches – especially over prolonged time intervals. However, there is one utterly infuriating property of the default stopwatch app: A single, perhaps accidental, touch of the treacherous «Reset» button annihilates everything, with no option to undo.
 
-<figure style="text-align: center">
-    <img src="docs/stopwatch.png" alt="iOS Stopwatch Screenshot" style="width: 150px" />
-    <figcaption>Stock iOS Stopwatch</figcaption>
-</figure>
+<br>
+<table>
+  <tr>
+    <td><img src="docs/stopwatch.png" width=175 height=324></td>
+    <td><img src="docs/stopwatch.png" width=175 height=324></td>
+  </tr>
+  <tr>
+     <td style="text-align: center">iOS Stopwatch 👎</td>
+     <td style="text-align: center">✨<i>timemit</i>✨</td>
+  </tr>
+ </table>
+<br>
 
-So what does _timemit_ do differently? First and foremost, rather than expunging all your precious records instantaneously, pressing «Reset» will ask for your confirmation. Furthermore, you can modify, delete and rename the splits. Seriously, why are the splits called laps? I for one have never used an iPhone to track my running.
+So what does _timemit_ [/taɪmɪt/](http://ipa-reader.xyz/?text=taɪmɪt) do differently? First and foremost, rather than expunging all your precious records instantaneously, pressing «Reset» will ask for your confirmation before anything is done. Furthermore, you can modify, delete and rename each time split.
 
-## But really, why?
+## Setup
 
-Having used [Ionic in combination with Angular](https://city-ol.ch/) for cross-platform app development for close to 6 years, I finally wanted to overcome my fear of React and this project seemed destined for such a learning-by-doing experiment.
+To start the app locally, run:
+
+    nvm use
+    npx expo start
+
+### Update Icons
+
+Follow the instructions [here](https://docs.expo.dev/guides/app-icons/), while using [this Figma file](<https://www.figma.com/file/WXGPoWYsqeAgdCSo80IHV6/Expo-App-Icon-%26-Splash-(Community)?node-id=1%3A1357&t=kjvFzlWC2BSILXJ8-1>).

@@ -1,13 +1,15 @@
-import React, { useRef, useState } from "react";
-import { Text, View, StyleSheet, Animated, Button } from "react-native";
+import React, { useRef } from "react";
+import { Text, View, StyleSheet, Button, Pressable } from "react-native";
 import AppStyles from "../../Style";
 import { formatTimestamp } from "../utils/format-time";
 import Swipeable from "react-native-gesture-handler/Swipeable";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 type LapTimeProps = {
   name: string;
   millis: number;
   onEdit: () => void;
+  onDelete: () => void;
   onRename: () => void;
 };
 
@@ -21,16 +23,25 @@ const LapTime = (props: LapTimeProps) => {
           margin: 0,
           alignContent: "center",
           justifyContent: "center",
-          width: 100,
         }}
       >
-        <Button
+        <Pressable
+          style={{ paddingHorizontal: 15 }}
+          onPress={() => {
+            props.onDelete();
+            swipeableRef.current.close();
+          }}
+        >
+          <Ionicons name="trash" size={21} color={AppStyles.primary} />
+        </Pressable>
+
+        {/* <Button
           onPress={() => {
             props.onEdit();
             swipeableRef.current.close();
           }}
           title="edit time"
-        ></Button>
+        ></Button> */}
       </View>
     );
   };

@@ -1,7 +1,6 @@
-import { View } from "react-native";
+import { Pressable, View, Text } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import {
-  DefaultTheme,
   DarkTheme,
   NavigationContainer,
   Theme,
@@ -10,6 +9,7 @@ import {
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import HomeScreen from "./src/screens/HomeScreen";
 import TimerScreen from "./src/screens/TimerScreen";
+import AppStyles from "./Style";
 
 const Stack = createNativeStackNavigator();
 
@@ -17,7 +17,7 @@ const MyTheme: Theme = {
   ...DarkTheme,
   colors: {
     ...DarkTheme.colors,
-    primary: "#fc3a7b",
+    primary: AppStyles.primary,
   },
   dark: true,
 };
@@ -32,7 +32,16 @@ export default function App() {
           <Stack.Screen
             name="Home"
             component={HomeScreen}
-            options={{ title: "Select Timer" }}
+            options={{
+              title: "Select Timer",
+              headerRight: () => (
+                <Pressable onPress={() => alert("new item")}>
+                  <Text style={{ color: AppStyles.primary, fontSize: 20 }}>
+                    New ＋
+                  </Text>
+                </Pressable>
+              ),
+            }}
           />
           <Stack.Screen name="Timer" component={TimerScreen} />
         </Stack.Navigator>

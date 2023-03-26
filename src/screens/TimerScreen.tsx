@@ -1,29 +1,56 @@
-import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import {
   Alert,
-  Button,
   FlatList,
-  ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   View,
-  StatusBarStyle,
-  Dimensions,
+  Pressable,
 } from "react-native";
 import AppStyles from "../../Style";
 import LapTime from "../components/LapTime";
 import TotalTimeTitle from "../components/TotalTimeTitle";
-import { formatTimestamp } from "../utils/format-time";
 
-const timerInitialState = {
+interface TimerState {
+  paused: boolean;
+  millisPreCurrentEpoch: number;
+  currentEpochStart: number;
+  totalElapsedMillis: number;
+  splits: { name: string; millis: number }[];
+}
+
+const timerInitialState: TimerState = {
   paused: true,
   millisPreCurrentEpoch: 0,
   currentEpochStart: 0,
   totalElapsedMillis: 0,
-  laps: [] as { name: string; millis: number }[],
+  splits: [],
 };
+
+// const timerInitialState: TimerState = {
+//   paused: true,
+//   millisPreCurrentEpoch: 0,
+//   currentEpochStart: 1679781171958,
+//   totalElapsedMillis: 0,
+//   splits: [
+//     { name: "Final Day 🥳🏁", millis: 37943610 },
+//     { name: "Monday 23 Jan 🔜", millis: 37577520 },
+//     { name: "Saturday", millis: 32928580 },
+//     { name: "Friday 🤒", millis: 32621550 },
+//     { name: "Thursday", millis: 32424010 },
+//     { name: "Monday 16 Jan", millis: 32591930 },
+//     { name: "Friday 13! 🍀", millis: 36016790 },
+//     { name: "Thursday 👨‍💻🚲", millis: 7994630 },
+//     { name: "Tuesday 😴", millis: 45477160 },
+//     { name: "Monday 9 Jan", millis: 42888630 },
+//     { name: "Saturday", millis: 44768430 },
+//     { name: "Friday 👨‍💻", millis: 40246680 },
+//     { name: "Thursday 🌦️", millis: 39913010 },
+//     { name: "Wednesday", millis: 39883920 },
+//     { name: "Monday 2 Jan", millis: 39725890 },
+//     { name: "Final Day 🥳", millis: 10000 },
+//   ],
+// };
 
 export default function TimerScreen({ navigation, route }) {
   const [timer, setTimer] = useState(() => timerInitialState);
@@ -35,17 +62,20 @@ export default function TimerScreen({ navigation, route }) {
         const totalElapsedMillis = oldTimer.paused
           ? oldTimer.totalElapsedMillis
           : oldTimer.millisPreCurrentEpoch + now - oldTimer.currentEpochStart;
-        const laps = [...oldTimer.laps];
-        const lappedMillis = laps.reduce((curr, prev) => curr + prev.millis, 0);
-        if (laps.length > 0 && !oldTimer.paused)
-          laps[0] = {
-            name: laps[0].name,
-            millis: laps[0].millis + totalElapsedMillis - lappedMillis,
+        const splits = [...oldTimer.splits];
+        const lappedMillis = splits.reduce(
+          (curr, prev) => curr + prev.millis,
+          0
+        );
+        if (splits.length > 0 && !oldTimer.paused)
+          splits[0] = {
+            name: splits[0].name,
+            millis: splits[0].millis + totalElapsedMillis - lappedMillis,
           };
         return {
           ...oldTimer,
           totalElapsedMillis,
-          laps,
+          splits: splits,
         };
       });
     }, 10);
@@ -53,11 +83,11 @@ export default function TimerScreen({ navigation, route }) {
   }, [timer]);
 
   const start = () => {
-    const laps = [...timer.laps];
-    if (laps.length === 0) laps.push({ name: "Lap 1", millis: 0 });
+    const laps = [...timer.splits];
+    if (laps.length === 0) laps.push({ name: "Split 1", millis: 0 });
     setTimer((oldTimer) => ({
       ...oldTimer,
-      laps,
+      splits: laps,
       currentEpochStart: Date.now(),
       paused: false,
     }));
@@ -74,12 +104,12 @@ export default function TimerScreen({ navigation, route }) {
     }));
   };
 
-  const lap = () => {
+  const newSplit = () => {
     setTimer((oldTimer) => ({
       ...oldTimer,
-      laps: [
-        { name: `Lap ${oldTimer.laps.length + 1}`, millis: 0 },
-        ...oldTimer.laps,
+      splits: [
+        { name: `Split ${oldTimer.splits.length + 1}`, millis: 0 },
+        ...oldTimer.splits,
       ],
     }));
   };
@@ -95,11 +125,22 @@ export default function TimerScreen({ navigation, route }) {
     ]);
   };
 
-  const editLap = (index: number) => {
+  const deleteSplit = (index: number) => {
+    Alert.alert("Warning", "Are you sure you want to delete this split?", [
+      { text: "Cancel", style: "cancel" },
+      {
+        text: "Delete",
+        onPress: () => console.log("should delete split"),
+        style: "destructive",
+      },
+    ]);
+  };
+
+  const editSplit = (index: number) => {
     console.log(index);
   };
 
-  const renameLap = (index: number) => {
+  const renameSplit = (index: number) => {
     console.log(index);
     Alert.prompt(
       "Modify time",
@@ -110,17 +151,17 @@ export default function TimerScreen({ navigation, route }) {
           text: "OK",
           onPress: (name) =>
             setTimer((oldTimer) => {
-              const laps = [...timer.laps];
+              const laps = [...timer.splits];
               laps[index] = { ...laps[index], name };
               return {
                 ...oldTimer,
-                laps,
+                splits: laps,
               };
             }),
         },
       ],
       "plain-text",
-      timer.laps[index].name
+      timer.splits[index].name
     );
   };
 
@@ -128,29 +169,33 @@ export default function TimerScreen({ navigation, route }) {
     <View style={styles.container}>
       <TotalTimeTitle totalMillis={timer.totalElapsedMillis}></TotalTimeTitle>
       <View style={styles.buttonContainer}>
-        <Button
-          color={AppStyles.secondary}
-          onPress={reset}
-          title="Reset"
-          disabled={timer.laps.length === 0}
-        ></Button>
-        <Button color={AppStyles.secondary} onPress={lap} title="Lap"></Button>
-        <Button
-          color={AppStyles.secondary}
-          onPress={timer.paused ? start : pause}
-          title={timer.paused ? "Start" : "Pause"}
-        ></Button>
+        <Pressable onPress={reset} disabled={timer.splits.length === 0}>
+          <Text style={styles.button}>Reset</Text>
+        </Pressable>
+        <Pressable onPress={newSplit}>
+          <Text style={styles.button}>Split</Text>
+        </Pressable>
+        <Pressable onPress={timer.paused ? start : pause}>
+          <Text style={styles.button}>
+            {!timer.paused
+              ? "Pause"
+              : timer.totalElapsedMillis === 0
+              ? "Start"
+              : "Unpause"}
+          </Text>
+        </Pressable>
       </View>
       <FlatList
         style={styles.timeList}
-        extraData={timer.laps}
-        data={timer.laps}
+        extraData={timer.splits}
+        data={timer.splits}
         renderItem={({ item, index }) => (
           <LapTime
             name={item.name}
             millis={item.millis}
-            onEdit={() => editLap(index)}
-            onRename={() => renameLap(index)}
+            onEdit={() => editSplit(index)}
+            onRename={() => renameSplit(index)}
+            onDelete={() => deleteSplit(index)}
           ></LapTime>
         )}
       />
@@ -170,11 +215,16 @@ const styles = StyleSheet.create({
     display: "flex",
     width: "100%",
     paddingHorizontal: 50,
+    paddingVertical: 10,
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "center",
   },
   button: {
-    width: 50,
+    width: 100,
+    textAlign: "center",
+    color: "white",
+    padding: 10,
+    fontSize: 20,
   },
   timeList: {
     width: "100%",

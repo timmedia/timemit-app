@@ -4,11 +4,23 @@ import AppStyles from "../../Style";
 import { formatTimestamp } from "../utils/format-time";
 
 const TotalTimeTitle = (props: { totalMillis: number }) => {
-  const scaleAnimation = useRef(new Animated.Value(1)).current;
-
-  const [scale, setScale] = useState(1);
-
   const millis = props.totalMillis;
+
+  const scaleAnimation = useRef(
+    new Animated.Value(
+      Math.min(
+        2,
+        Math.max(2 / (1 + 0.15 * (formatTimestamp(millis).length - 4)), 0.7)
+      )
+    )
+  ).current;
+  const [scale, setScale] = useState(
+    Math.min(
+      2,
+      Math.max(2 / (1 + 0.15 * (formatTimestamp(millis).length - 4)), 0.7)
+    )
+  );
+
   const timestamp = formatTimestamp(millis);
   const nextScale = Math.min(
     2,

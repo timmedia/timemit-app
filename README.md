@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/adaptive-icon.png" width="256">
+</p>
+
 # timemit - Why another stopwatch?
 
 I **love** using stopwatches – especially over prolonged time intervals. However, there is one utterly infuriating property of the default stopwatch app: A single, perhaps accidental, touch of the treacherous «Reset» button annihilates everything, with no option to undo.
@@ -19,10 +23,16 @@ So what does _timemit_ [/taɪmɪt/](http://ipa-reader.xyz/?text=taɪmɪt) do dif
 
 ## Setup
 
-To start the app locally, run:
+To open the app locally, run:
 
     nvm use
     npx expo start
+
+Building the app can be done via [expo.dev](https://expo.dev). To do so, execute
+
+    eas build --auto-submit
+
+(cf. [Distribution](https://docs.expo.dev/distribution/introduction/)).
 
 ### Update Icons
 
